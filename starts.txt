@@ -1,0 +1,2 @@
+Gene start strand
+COL1A2 35534 -
