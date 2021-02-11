@@ -41,9 +41,12 @@ STOP=as.numeric(args[5])
 
 seq<-as.character(DNAString(as.character(sread(fa)))[START:STOP]) ## Isolate location of gene in chromosome, start-stop
 
-newseq<-ShortRead(sread=DNAStringSet(seq), id=BStringSet(paste0("REF", "_",sam))) # prepare fasta sequence
 
-writeFasta(newseq, paste0("REF", "_",gene,".fa")) # write it out
+
+newseq<-ShortRead(sread=DNAStringSet(seq), id=BStringSet(paste0(gene,"_Loxodonta_africana"))) # prepare fasta sequence
+
+writeFasta(newseq, paste0(gene,"_Loxodonta_africana",".fa")) # write it out
+writeFasta(newseq, paste0(gene,"_Elephas_maximus",".fa")) # write it out
 
 
 
@@ -62,9 +65,9 @@ writeFasta(newseq, paste0("REF", "_",gene,".fa")) # write it out
 
 
 
-
+#Clean any leftover files from previous runs!
 rm *spliced.* 
-
+rm *translated.fa
 
 R -e '
 
@@ -82,11 +85,17 @@ gene=args[3]
 setwd(directory)
 
 
-fas<-dir(pattern=paste0("\\",gene,".fa$"))  #Grab all fasta files
+fas<-dir(pattern=paste0("^",gene,".*\\.fa$"))  #Grab all fasta files with the gene name
 info<-read.table("./starts.txt", h=T, as.is=T) # name of each gene/ where each gene starts / which strand
 
 
+
+
 for(x in 1:length(fas)){
+
+    samp<-strsplit(gsub(".fa", "", fas[x]), "_")[[1]][3]
+    pop<-strsplit(gsub(".fa", "", fas[x]), "_")[[1]][2]
+
     fa<-readFasta(fas[x]) #readFasta loads the fasta file into R
     fa<-DNAString(as.character(sread(fa))) #Turn iNAString
     tab<-read.table(paste0("./EIT/", gene, ".txt"), as.is=T, sep="\t") # Exon / Intron file
@@ -102,7 +111,7 @@ for(x in 1:length(fas)){
         
         starts<-starts[-grep("Intron", tab[,1])] # remove intron starts from list
         ends<-ends[-grep("Intron", tab[,1])]    #remove intron ends from list
-	    
+        
     }else{ # if gene of the fasta file is on (-) strand, same as above but the reverse logic (move from right to left)
         ends<-info[info[,1]==gene,2] # what previously would be start is here the end
         starts<-NULL #the same logic as above
@@ -126,14 +135,14 @@ for(x in 1:length(fas)){
     for(i in 1:length(starts)){
         seqs<-paste(sep="", seqs, as.character(fa[starts[i]:ends[i]]))
     }
-	
+    
     seqs<-gsub(" ", "", seqs)
 
     ids<-paste0(gene, "_spliced")
 
     newseq<-ShortRead(sread=DNAStringSet(seqs), id=BStringSet(ids))
 
-    writeFasta(newseq, paste0(gene, "_spliced.fa"))
+    writeFasta(newseq, paste0(gene,"_",pop,"_",samp,"_spliced.fa"))
 
 
     }
@@ -153,18 +162,17 @@ for i in *_spliced.fa; do /home/rjt939/BLAST/ncbi-blast-2.6.0+/bin/makeblastdb -
 
 rm *.blast
 
-ls *spliced.fa |cut -f 1 -d "_" |sort |uniq>SAMPLES #save the names/populations of the files/samples #1KG_samples
+ls *spliced.fa |cut -f 2,3 -d "_" |sort |uniq>SAMPLES #save the names/populations of the files/samples #1KG_samples
 
 
 
 cat SAMPLES |while read sams;
-    do /home/rjt939/BLAST/blast-2.2.26/bin/blastall  -p tblastn -i ./REFERENCE_PROTEINS/$GENE".fa"  -d $GENE"_spliced.fa" -o $GENE"_spliced.blast" -F F -E 32767 -G 32767 -n T -m 0 -M PAM70;
+    do /home/rjt939/BLAST/blast-2.2.26/bin/blastall  -p tblastn -i ./REFERENCE_PROTEINS/$GENE".fa"  -d $GENE"_"$sams"_spliced.fa" -o $GENE"_"$sams"_spliced.blast" -F F -E 32767 -G 32767 -n T -m 0 -M PAM70;
         
     done;
 
 
 
-rm *translated.fa
 
 
 
@@ -181,17 +189,21 @@ library(ShortRead)
 
 directory=args[1]
 setwd(directory)
+gene=args[3]
 
 
-f<-dir(pattern="\\_spliced.blast")    #load all blast files
-genes<-gsub("_spliced.blast", "", f)     #get the names for each blast file
+f<-dir(pattern=paste0("^",gene,".*\\_spliced.blast$")) #load all blast files for this gene
 
 
-fout<-paste0(genes, "_translated.fa")  #name of output fasta (protein)
-h<-genes
-h<-paste(sep="_", sapply(strsplit(h, "_"), "[[", 1), sapply(strsplit(h, "_"), "[[", 2), sapply(strsplit(h, "_"), "[[", 3)) # just the sample name
+
 
 for(i in 1:length(f)){ #for each blast file
+
+    samp<-strsplit(gsub(".fa", "", f[i]), "_")[[1]][3]
+    pop<-strsplit(gsub(".fa", "", f[i]), "_")[[1]][2]
+    fout<-paste0(gene,"_",pop,"_",samp, "_translated.fa")  #name of output fasta (protein)
+
+
     blout<-f[i]   #grab each file
     zz<-pipe(paste0("grep -e \"Identities\" -e \"Query\" -e \"Sbjct\" -e \"Length of query\" ", blout, " | grep -v \"Query=\""))  #create pipe connection object for file
     a<-scan(zz, what="", sep="\n") #scan pipe ?
@@ -218,24 +230,24 @@ for(i in 1:length(f)){ #for each blast file
         }
         a<-paste(collapse="", a)
         newseq<-AAStringSet(a)
-        names(newseq)<-h[i]
+        names(newseq)<-gene
         writeXStringSet(newseq, fout[i])
     
     }else{#if separator=0
         if(length(a)==1|length(a)==0){ #if no results at all! # seems to be called only for samples that lack AMELY, good!
             a=a[1] 
-			print(paste0("No Results for 1 BLAST ",h[i]))
+            print(paste0("No Results for 1 BLAST ",gene))
             # b<-a[grep("Query",a,ignore.case=TRUE)]
             # tot<-as.numeric(strsplit(b[length(b)], " ")[[1]][length(strsplit(b[length(b)], " ")[[1]])])
             # a=rep("X", tot)
-            # a<-paste(collapse="", a)			
+            # a<-paste(collapse="", a)            
             # newseq<-AAStringSet(a)
-            # names(newseq)<-h[i]
+            # names(newseq)<-gene
             # writeXStringSet(newseq, fout[i])
-		    
-		    
+            
+            
             }else{
-		    a<-a[(separator[1]+1):(length(a))]
+            a<-a[(separator[1]+1):(length(a))]
             b<-a[grep("Query",a,ignore.case=TRUE)]
             tot<-as.numeric(strsplit(b[length(b)], " ")[[1]][length(strsplit(b[length(b)], " ")[[1]])])
             b<-as.numeric(strsplit(b[1], " ")[[1]][2])
@@ -250,9 +262,9 @@ for(i in 1:length(f)){ #for each blast file
             }
             a<-paste(collapse="", a)
             newseq<-AAStringSet(a)
-            names(newseq)<-h[i]
+            names(newseq)<-gene
             writeXStringSet(newseq, fout[i])
-            }		
+            }
     }
 }
 
