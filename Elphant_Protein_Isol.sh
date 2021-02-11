@@ -231,7 +231,7 @@ for(i in 1:length(f)){ #for each blast file
         a<-paste(collapse="", a)
         newseq<-AAStringSet(a)
         names(newseq)<-gene
-        writeXStringSet(newseq, fout[i])
+        writeXStringSet(newseq, fout)
     
     }else{#if separator=0
         if(length(a)==1|length(a)==0){ #if no results at all! # seems to be called only for samples that lack AMELY, good!
@@ -243,7 +243,7 @@ for(i in 1:length(f)){ #for each blast file
             # a<-paste(collapse="", a)            
             # newseq<-AAStringSet(a)
             # names(newseq)<-gene
-            # writeXStringSet(newseq, fout[i])
+            # writeXStringSet(newseq, fout)
             
             
             }else{
@@ -263,7 +263,7 @@ for(i in 1:length(f)){ #for each blast file
             a<-paste(collapse="", a)
             newseq<-AAStringSet(a)
             names(newseq)<-gene
-            writeXStringSet(newseq, fout[i])
+            writeXStringSet(newseq, fout)
             }
     }
 }
