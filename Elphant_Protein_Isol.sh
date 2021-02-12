@@ -39,27 +39,40 @@ START=as.numeric(args[4])
 STOP=as.numeric(args[5])
 SCAF=args[6]
 
+
+
+
 VAR_TABLE=read.table(paste0(SCAF,".snp")) #load sub-table
+POS=as.numeric(VAR_TABLE[,2])
+
+REF_SEQ=as.character(DNAString(as.character(sread(fa))))
 
 
-
-#MISSING=substring(as.character(VAR_TABLE[,1]),nchar(as.character(VAR_TABLE[1,1]))+1)
-#PRESENT=as.character(VAR_TABLE[,2])
-#COMPLETE=as.numeric(paste0(MISSING,PRESENT))
-
-# if (STOP>=START){
-
-# }else{
-
-# }
-
-# VAR_OF_INTRST=VAR_TABLE[,]
+if (STOP>=START){
+    VARIANTS=which(POS>=START & POS<=STOP)
+    }else{
+    VARIANTS=which(POS>=STOP & POS<=START)
+   }
+VARIANTS=VAR_TABLE[VARIANTS,]
 
 
+NAMES=c("Elephas_maximus1","Elephas_maximus2","Elephas_maximus3","Mammuthus_primigenius1","Mammuthus_primigenius2")
+SEQUENCES=rep(REF_SEQ,length(NAMES))
 
 
+#for V in variants?
+## Assemble variants in a 5 length list
+for (i in 1:length(SEQUENCES)){
+    print(nchar(SEQUENCES[i]))
+    print(class(SEQUENCES[i]))
+ 
+ ##substr(s, 4, 4) <- "t" #replace with variant for that sample
+ ##check each positions
+	}
+
+
+#### NOW ISOLATE CHUNK OF INTEREST AND PRINT
 seq<-as.character(DNAString(as.character(sread(fa)))[START:STOP]) ## Isolate location of gene in chromosome, start-stop
-
 
 
 newseq<-ShortRead(sread=DNAStringSet(seq), id=BStringSet(paste0(gene,"_Loxodonta_africana"))) # prepare fasta sequence
