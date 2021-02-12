@@ -6,7 +6,7 @@ HOME_DIR='/home/rjt939/Elephants/';
 
 GENE='COL1A2';
 
-SCAFOLD='scaffold_5';
+SCAFOLD="scaffold_5";
 START='55153479';
 STOP='55189012';
 
@@ -18,8 +18,9 @@ cd $HOME_DIR
 
 samtools faidx $REFERENCE_GENOME;
 
-samtools faidx $REFERENCE_GENOME $SCAFOLD > 'REFERENCE_'$SCAFOLD'.fa';
+samtools faidx $REFERENCE_GENOME $SCAFOLD > 'REFERENCE_'$SCAFOLD'.fa'; ## Creat sub_file with just scaffol of iterest
 
+cat Galaxy1-[imported__mammoth_SNPs].gd_snp | grep -P  "^""$SCAFOLD""\t">$SCAFOLD".snp" # ATLERNATIVE?
 
 R -e '
 
@@ -36,8 +37,26 @@ sam=args[3]
 gene=args[3]
 START=as.numeric(args[4])
 STOP=as.numeric(args[5])
+SCAF=args[6]
 
-#### Variants Swaps should be done here???
+VAR_TABLE=read.table(paste0(SCAF,".snp")) #load sub-table
+
+
+
+#MISSING=substring(as.character(VAR_TABLE[,1]),nchar(as.character(VAR_TABLE[1,1]))+1)
+#PRESENT=as.character(VAR_TABLE[,2])
+#COMPLETE=as.numeric(paste0(MISSING,PRESENT))
+
+# if (STOP>=START){
+
+# }else{
+
+# }
+
+# VAR_OF_INTRST=VAR_TABLE[,]
+
+
+
 
 seq<-as.character(DNAString(as.character(sread(fa)))[START:STOP]) ## Isolate location of gene in chromosome, start-stop
 
@@ -55,7 +74,7 @@ writeFasta(newseq, paste0(gene,"_Elephas_maximus",".fa")) # write it out
 #SPLICING
 
 
-' --args $HOME_DIR 'REFERENCE_'$SCAFOLD'.fa' $GENE $START $STOP
+' --args $HOME_DIR 'REFERENCE_'$SCAFOLD'.fa' $GENE $START $STOP $SCAFOLD
 
 
 
