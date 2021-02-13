@@ -80,7 +80,6 @@ for (V in 1:dim(VARIANTS)[1]){
 		if (GENOTYPE==0){ #homozygous for alternative?
 		    print("ALTERNATIVE")
             substr(SEQUENCES[i], LOC, LOC) <- ALT #replace with variant for that sample
-            #substr(SEQUENCES[i], LOC-10, LOC+10)       ##check if positions changed
             
 		}else{
             print("REFERENCE")
@@ -92,13 +91,20 @@ for (V in 1:dim(VARIANTS)[1]){
 
 
 #### NOW ISOLATE CHUNK OF INTEREST AND PRINT (prbly another loop)
-seq<-as.character(DNAString(as.character(sread(fa)))[START:STOP]) ## Isolate location of gene in chromosome, start-stop
+
+for (i in 1:length(SEQUENCES)){
+
+seq<-substr(SEQUENCES[i], START, STOP)
+newseq<-ShortRead(sread=DNAStringSet(seq), id=BStringSet(paste0(gene,"_",NAMES[i]))) # prepare fasta sequence
+writeFasta(newseq, paste0(gene,"_",NAMES[i],".fa")) # write it out
 
 
-newseq<-ShortRead(sread=DNAStringSet(seq), id=BStringSet(paste0(gene,"_Loxodonta_africana"))) # prepare fasta sequence
+}
 
-writeFasta(newseq, paste0(gene,"_Loxodonta_africana",".fa")) # write it out
-writeFasta(newseq, paste0(gene,"_Elephas_maximus",".fa")) # write it out
+
+seq<-substr(REF_SEQ, START, STOP)
+newseq<-ShortRead(sread=DNAStringSet(seq), id=BStringSet(paste0(gene,"_","Loxodonta_africana"))) # prepare fasta sequence
+writeFasta(newseq, paste0(gene,"_","Loxodonta_africana",".fa")) # write it out
 
 
 
