@@ -60,18 +60,32 @@ NAMES=c("Elephas_maximus1","Elephas_maximus2","Elephas_maximus3","Mammuthus_prim
 SEQUENCES=rep(REF_SEQ,length(NAMES))
 
 
-#for V in variants?
-## Assemble variants in a 5 length list
-for (i in 1:length(SEQUENCES)){
-    print(nchar(SEQUENCES[i]))
-    print(class(SEQUENCES[i]))
+for (V in 1:dim(VARIANTS)[1]){
+
+    VAR=VARIANTS[V]
+	GENOTYPES=c(VAR[],VAR[],VAR[],VAR[],VAR[])  #make sure they are in correct order, correspond to the the names/species
+
+    for (i in 1:length(SEQUENCES)){
+        print(nchar(SEQUENCES[i]))
+        print(class(SEQUENCES[i]))
+        print(GENOTYPES[i])
+        print(class(GENOTYPES[i]))
+	    
+		# if (GENOTYPES[i]==2){
+		  ##substr(s, 4, 4) <- "t" #replace with variant for that sample
+          ##check each positions
+		
+		
+		# }else{
+		
+		# }
+	 
+
  
- ##substr(s, 4, 4) <- "t" #replace with variant for that sample
- ##check each positions
 	}
+}
 
-
-#### NOW ISOLATE CHUNK OF INTEREST AND PRINT
+#### NOW ISOLATE CHUNK OF INTEREST AND PRINT (prbly another loop)
 seq<-as.character(DNAString(as.character(sread(fa)))[START:STOP]) ## Isolate location of gene in chromosome, start-stop
 
 
