@@ -63,30 +63,30 @@ SEQUENCES=rep(REF_SEQ,length(NAMES))
 for (V in 1:dim(VARIANTS)[1]){
 
     VAR=VARIANTS[V,]
-	REF=as.character(VAR[3][1,])
-	ALT=as.character(VAR[4][1,])
-	LOC=as.numeric(VAR[2])
-	GENOTYPES=c(VAR[9],VAR[13],VAR[17],VAR[29],VAR[33])  #make sure they are in correct order, correspond to the the names/species
+    REF=as.character(VAR[3][1,])
+    ALT=as.character(VAR[4][1,])
+    LOC=as.numeric(VAR[2])
+    GENOTYPES=c(VAR[9],VAR[13],VAR[17],VAR[29],VAR[33])  #make sure they are in correct order, correspond to the the names/species
     
-	# print(c(REF,ALT,LOC,V))
+    # print(c(REF,ALT,LOC,V))
     print(V)
 
 
 
     for (i in 1:length(SEQUENCES)){
-		
-		GENOTYPE=GENOTYPES[[i]]
+        
+        GENOTYPE=GENOTYPES[[i]]
 
-		if (GENOTYPE==0){ #homozygous for alternative?
-		    print("ALTERNATIVE")
+        if (GENOTYPE==0){ #homozygous for alternative?
+            print("ALTERNATIVE")
             substr(SEQUENCES[i], LOC, LOC) <- ALT #replace with variant for that sample
             
-		}else{
+        }else{
             print("REFERENCE")
-		}
+        }
 
  
-	}
+    }
 }
 
 
@@ -209,6 +209,8 @@ for(x in 1:length(fas)){
 ' --args $HOME_DIR 'REFERENCE_'$SCAFOLD'.fa' $GENE $START $STOP
 
 
+sleep 10
+
 #######################################################################################
 #######################################################################################
 ##BLASTING
@@ -231,6 +233,7 @@ cat SAMPLES |while read sams;
 
 
 
+sleep 10
 
 
 
