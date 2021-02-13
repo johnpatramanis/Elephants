@@ -62,22 +62,31 @@ SEQUENCES=rep(REF_SEQ,length(NAMES))
 
 for (V in 1:dim(VARIANTS)[1]){
 
-    VAR=VARIANTS[V]
-	GENOTYPES=c(VAR[],VAR[],VAR[],VAR[],VAR[])  #make sure they are in correct order, correspond to the the names/species
+    VAR=VARIANTS[V,]
+	REF=as.character(VAR[3][1,])
+	ALT=as.character(VAR[4][1,])
+	LOC=as.numeric(VAR[2])
+	GENOTYPES=c(VAR[9],VAR[13],VAR[17],VAR[29],VAR[33])  #make sure they are in correct order, correspond to the the names/species
+    
+	# print(c(REF,ALT,LOC,V))
+
+
+
 
     for (i in 1:length(SEQUENCES)){
-        print(nchar(SEQUENCES[i]))
-        print(class(SEQUENCES[i]))
-        print(GENOTYPES[i])
-        print(class(GENOTYPES[i]))
+        # print(nchar(SEQUENCES[i]))
+        # print(class(SEQUENCES[i]))
+		GENOTYPE=GENOTYPES[i]
+        print(GENOTYPE)
+        print(class(GENOTYPE))
 	    
-		# if (GENOTYPES[i]==2){
+		# if (GENOTYPES[i]=="0"){ #homozygous for alternative?
 		  ##substr(s, 4, 4) <- "t" #replace with variant for that sample
           ##check each positions
-		
+		  print("WOW")
 		
 		# }else{
-		
+		   print("NOT WOW")
 		# }
 	 
 
