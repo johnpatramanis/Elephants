@@ -69,19 +69,18 @@ for (V in 1:dim(VARIANTS)[1]){
 	GENOTYPES=c(VAR[9],VAR[13],VAR[17],VAR[29],VAR[33])  #make sure they are in correct order, correspond to the the names/species
     
 	# print(c(REF,ALT,LOC,V))
-
+    print(V)
 
 
 
     for (i in 1:length(SEQUENCES)){
-        print(nchar(SEQUENCES[i]))
-        print(class(SEQUENCES[i]))
+		
 		GENOTYPE=GENOTYPES[[i]]
 
 		if (GENOTYPE==0){ #homozygous for alternative?
 		    print("ALTERNATIVE")
-            # substr(SEQUENCES[i], LOC, LOC) <- ALT #replace with variant for that sample
-            #substr(x, start, stop)       ##check if positions changed
+            substr(SEQUENCES[i], LOC, LOC) <- ALT #replace with variant for that sample
+            #substr(SEQUENCES[i], LOC-10, LOC+10)       ##check if positions changed
             
 		}else{
             print("REFERENCE")
@@ -90,6 +89,7 @@ for (V in 1:dim(VARIANTS)[1]){
  
 	}
 }
+
 
 #### NOW ISOLATE CHUNK OF INTEREST AND PRINT (prbly another loop)
 seq<-as.character(DNAString(as.character(sread(fa)))[START:STOP]) ## Isolate location of gene in chromosome, start-stop
