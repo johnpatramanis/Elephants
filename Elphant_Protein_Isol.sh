@@ -74,19 +74,18 @@ for (V in 1:dim(VARIANTS)[1]){
 
 
     for (i in 1:length(SEQUENCES)){
-        # print(nchar(SEQUENCES[i]))
-        # print(class(SEQUENCES[i]))
+        print(nchar(SEQUENCES[i]))
+        print(class(SEQUENCES[i]))
 		GENOTYPE=GENOTYPES[[i]]
 
 		if (GENOTYPE==0){ #homozygous for alternative?
 		    print("ALTERNATIVE")
-		  ##substr(s, 4, 4) <- "t" #replace with variant for that sample
-          ##check each positions
+            # substr(SEQUENCES[i], LOC, LOC) <- ALT #replace with variant for that sample
+            #substr(x, start, stop)       ##check if positions changed
             
 		}else{
             print("REFERENCE")
 		}
-	 
 
  
 	}
