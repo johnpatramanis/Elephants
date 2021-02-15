@@ -116,12 +116,9 @@ writeFasta(newseq, paste0(gene,"_","Loxodonta_africana",".fa")) # write it out
 ' --args $HOME_DIR 'REFERENCE_'$SCAFOLD'.fa' $GENE $START $STOP $SCAFOLD
 
 
+############################### MOVE TO SPLICING THE SEQs
 
-##### Change code to do add sample name!
-## Sample name should be second!
-
-
-
+sleep 20
 
 #Clean any leftover files from previous runs!
 rm *spliced.* 
@@ -229,11 +226,11 @@ ls *spliced.fa |cut -f 2,3 -d "_" |sort |uniq>SAMPLES #save the names/population
 cat SAMPLES |while read sams;
     do /home/rjt939/BLAST/blast-2.2.26/bin/blastall  -p tblastn -i ./REFERENCE_PROTEINS/$GENE".fa"  -d $GENE"_"$sams"_spliced.fa" -o $GENE"_"$sams"_spliced.blast" -F F -E 32767 -G 32767 -n T -m 0 -M PAM70;
         
-    done;
+done;
 
 
 
-sleep 10
+sleep 60
 
 
 
@@ -241,7 +238,7 @@ R -e '
 
 ################################################################################################################
 ################################################################################################################
-#SPLICING
+#BLASTING RESULTS
 
 
 args = commandArgs(trailingOnly=TRUE)
@@ -254,6 +251,8 @@ gene=args[3]
 
 
 f<-dir(pattern=paste0("^",gene,".*\\_spliced.blast$")) #load all blast files for this gene
+HEAD<-gsub("_spliced.blast", "", f)     #get the names for each blast file
+HEAD<-paste(sep="_", sapply(strsplit(HEAD, "_"), "[[", 1), sapply(strsplit(HEAD, "_"), "[[", 2), sapply(strsplit(HEAD, "_"), "[[", 3)) # just the sample name
 
 
 
@@ -291,7 +290,7 @@ for(i in 1:length(f)){ #for each blast file
         }
         a<-paste(collapse="", a)
         newseq<-AAStringSet(a)
-        names(newseq)<-gene
+        names(newseq)<-HEAD[i]
         writeXStringSet(newseq, fout)
     
     }else{#if separator=0
@@ -323,7 +322,7 @@ for(i in 1:length(f)){ #for each blast file
             }
             a<-paste(collapse="", a)
             newseq<-AAStringSet(a)
-            names(newseq)<-gene
+            names(newseq)<-HEAD[i]
             writeXStringSet(newseq, fout)
             }
     }
@@ -335,3 +334,5 @@ for(i in 1:length(f)){ #for each blast file
 
 ' --args $HOME_DIR 'REFERENCE_'$SCAFOLD'.fa' $GENE $START $STOP
 
+rm ALL_SAMPLES_"$GENE".fa;  #if it exists from previous run
+cat "$GENE"*_translated.fa > ALL_SAMPLES_"$GENE".fa; #gather all samples for this gene/prot
