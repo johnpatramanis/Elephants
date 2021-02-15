@@ -1,2 +1,3 @@
 Gene start strand
 COL1A2 35534 -
+AHSG 1 +
