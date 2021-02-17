@@ -4,11 +4,11 @@
 #########################
 HOME_DIR='/home/rjt939/Elephants/';
 
-GENE='COL17A1';
 
-SCAFOLD="scaffold_10";
-START='14385684';
-STOP='14431439 ';
+GENE='ALB';
+SCAFOLD="scaffold_30";
+START='24250936';
+STOP='24267032';
 
 REFERENCE_GENOME='/home/rjt939/Elephants/REFERENCE_GENOME/Loxodonta_africana.loxAfr3.dna.toplevel.fa';
 
@@ -79,7 +79,7 @@ for (V in 1:dim(VARIANTS)[1]){
 
         if (GENOTYPE==0){ #homozygous for alternative ############################################################### important!
             print("ALTERNATIVE")
-            substr(SEQUENCES[i], LOC, LOC) <- ALT #replace with variant for that sample
+            substr(SEQUENCES[i], LOC+1, LOC+1) <- ALT #replace with variant for that sample #sequence is shifted by one position
             
         }else{
             print("REFERENCE")

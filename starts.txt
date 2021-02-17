@@ -1,3 +1,6 @@
-Gene start strand
+Gene start(+1) strand
 COL1A2 35534 -
 AHSG 1 +
+COL17A1 1 +
+APOA4 14492 -
+ALB 16097 -
