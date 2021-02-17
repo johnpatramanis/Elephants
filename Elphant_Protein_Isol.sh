@@ -4,11 +4,11 @@
 #########################
 HOME_DIR='/home/rjt939/Elephants/';
 
-GENE='COL1A2';
+GENE='COL17A1';
 
-SCAFOLD="scaffold_5";
-START='55153479';
-STOP='55189012';
+SCAFOLD="scaffold_10";
+START='14385684';
+STOP='14431439 ';
 
 REFERENCE_GENOME='/home/rjt939/Elephants/REFERENCE_GENOME/Loxodonta_africana.loxAfr3.dna.toplevel.fa';
 
@@ -77,7 +77,7 @@ for (V in 1:dim(VARIANTS)[1]){
         
         GENOTYPE=GENOTYPES[[i]]
 
-        if (GENOTYPE==0){ #homozygous for alternative?
+        if (GENOTYPE==0){ #homozygous for alternative ############################################################### important!
             print("ALTERNATIVE")
             substr(SEQUENCES[i], LOC, LOC) <- ALT #replace with variant for that sample
             
@@ -107,10 +107,6 @@ newseq<-ShortRead(sread=DNAStringSet(seq), id=BStringSet(paste0(gene,"_","Loxodo
 writeFasta(newseq, paste0(gene,"_","Loxodonta_africana",".fa")) # write it out
 
 
-
-################################################################################################################
-################################################################################################################
-#SPLICING
 
 
 ' --args $HOME_DIR 'REFERENCE_'$SCAFOLD'.fa' $GENE $START $STOP $SCAFOLD
@@ -168,11 +164,11 @@ for(x in 1:length(fas)){
         ends<-ends[-grep("Intron", tab[,1])]    #remove intron ends from list
         
     }else{ # if gene of the fasta file is on (-) strand, same as above but the reverse logic (move from right to left)
-        ends<-info[info[,1]==gene,2] # what previously would be start is here the end
+        ends<-as.numeric(info[info[,1]==gene,2]) # what previously would be start is here the end
         starts<-NULL #the same logic as above
         for(i in 1:length(tab[,1])){ #the same logic as in the above loop, but we are moving to the left, so starts are bigger numbers than their ends
-            starts<-c(starts, ends[length(ends)]-tab[i,2]+1)
-            ends<-c(ends, ends[length(ends)]-tab[i,2])
+            starts<-c(starts, ends[length(ends)]-as.numeric(tab[i,2])+1)
+            ends<-c(ends, ends[length(ends)]-as.numeric(tab[i,2]))
         }
         
         ends<-ends[1:length(tab[,1])]   #again remove last part
@@ -206,7 +202,7 @@ for(x in 1:length(fas)){
 ' --args $HOME_DIR 'REFERENCE_'$SCAFOLD'.fa' $GENE $START $STOP
 
 
-sleep 10
+sleep 20
 
 #######################################################################################
 #######################################################################################
